@@ -62,8 +62,8 @@ Site config file example:
 
 ```
 server {
-    server_name example.toright.com;
-    root /usr/share/nginx/html;
+    server_name example.com;
+    root /var/www/example;
     index index.html index.php index.htm;
  
     access_log /var/log/nginx/access.log;
@@ -72,6 +72,7 @@ server {
     # set expiration of assets to MAX for caching
     location ~* \.(ico|css|js|gif|jpe?g|png|ogg|ogv|svg|svgz|eot|otf|woff)(\?.+)?$ {
         expires max;
+        access_log off;
         log_not_found off;
     }
  
@@ -83,7 +84,7 @@ server {
     }
  
     location ~* \.php$ {
-        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
         fastcgi_index index.php;
         fastcgi_split_path_info ^(.+\.php)(.*)$;
         include fastcgi_params;
