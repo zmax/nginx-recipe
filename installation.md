@@ -56,3 +56,38 @@ http {
 - use epoll：啟動 epoll 會快很多，效果不錯
 - worker_connections：每個程序最高可以開啟的連線數
 - access_log, error_log：HTTP Log 存放的位置
+
+
+Site config file example:
+
+```
+server {
+    server_name example.toright.com;
+    root /usr/share/nginx/html;
+    index index.html index.php index.htm;
+ 
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+ 
+    # set expiration of assets to MAX for caching
+    location ~* \.(ico|css|js|gif|jpe?g|png|ogg|ogv|svg|svgz|eot|otf|woff)(\?.+)?$ {
+        expires max;
+        log_not_found off;
+    }
+ 
+    server_tokens off;
+ 
+    # framework rewrite
+    location / {
+        try_files $uri $uri/ /index.php;
+    }
+ 
+    location ~* \.php$ {
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_index index.php;
+        fastcgi_split_path_info ^(.+\.php)(.*)$;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+}
+```
